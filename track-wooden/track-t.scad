@@ -53,7 +53,7 @@ render_track(base, left, right, radius);
  * ****************************************************************************** */
 
 // Import tracklib from globally-installed copy
-use <tracklib.scad>;
+use <trains/tracklib.scad>;
 
 /*
  */

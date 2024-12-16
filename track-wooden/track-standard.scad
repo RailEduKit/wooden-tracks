@@ -62,7 +62,7 @@ render_track(base, left, straight, right, straight_size, radius, angle);
  * ****************************************************************************** */
 
 // Import tracklib from globally-installed copy
-use <tracklib.scad>;
+use <trains/tracklib.scad>;
 
 /*
  * @param string base              Connector to place on the base end of the piece.

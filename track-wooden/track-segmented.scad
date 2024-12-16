@@ -73,7 +73,7 @@ render_track(segments, left, right);
  * ****************************************************************************** */
 
 // Import tracklib from globally-installed copy
-use <tracklib.scad>;
+use <trains/tracklib.scad>;
 use <dotscad/on_arc.scad>;
 use <dotscad/pie.scad>;
 

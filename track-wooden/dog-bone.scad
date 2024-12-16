@@ -41,7 +41,7 @@ dogbone();
  * ****************************************************************************** */
 
 // Import tracklib from globally-installed copy
-use <tracklib.scad>;
+use <trains/tracklib.scad>;
 
 module dogbone() {
     union() {
