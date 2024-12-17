@@ -25,7 +25,7 @@ $o = .1;
 // Constants for wooden track parts:
 function wood_width()            = 40;
 function wood_height()           = 12;
-function wood_well_height()      = 9; // the well is only on one side
+function wood_well_height()      = 9; // height of the well from the bottom a the track
 function wood_well_width()       = 5.7;
 function wood_well_spacing()     = 19.25;
 function wood_well_rim()         = (wood_width() - wood_well_spacing() - 2 * wood_well_width())/2;
@@ -61,25 +61,25 @@ use <dotscad/pie.scad>;
  * example of the functions it provides.  This example will *not* render if this module
  * is imported into your own project via the `use` statement.
  */
-//tracklib_example();
+tracklib_example();
 //wood_track_2d();
 //wood_track();
 //wood_rails_2d();
 //rotate([180,0,0]) translate([0,-wood_width(),-wood_height()]) wood_rails();
-wood_track_arc();
-rotate([180,0,0])translate([0,0,0])wood_rails_arc();
+//wood_track_arc(double_sided_rails=true);
 
 module tracklib_example($fn=25) {
     // Wood pieces
-    #wood_track(10);
+    wood_track(10);
+    translate([-15,0,0]) wood_track(10, double_sided_rails=true);
     translate([15,30,0]) wood_plug();
     translate([15,10,0]) difference() {
        translate([0,-wood_plug_radius()-2]) cube([wood_plug_neck_length() + wood_plug_radius() + 2, wood_plug_radius() * 2 + 4, wood_height()]);
         wood_cutout();
     }
-    translate([-5,-10,0]) rotate([0,0,90]) wood_track_arc(10, 25, $fn=120);
-//    translate([-14,-3,0]) rotate([0,0,90+25]) wood_track_slope(25, 30, $fn=120);
-//    translate([-29,-10,6]) rotate([30,0,90+25]) wood_track_slope(25, -30, $fn=120);
+    translate([-20,-10,0]) rotate([0,0,90]) wood_track_arc(10, 25, $fn=120);
+    //translate([-14,-3,0]) rotate([0,0,90+25]) wood_track_slope(25, 30, $fn=120);
+    //translate([-29,-10,6]) rotate([30,0,90+25]) wood_track_slope(25, -30, $fn=120);
     // Trackmaster pieces
 //    translate([40,30,0]) trackmaster_plug();
 //    translate([40,10,0]) difference() {
@@ -188,14 +188,16 @@ module wood_rails_2d() {
  * @param bool rails False if you do not want to include rails (wheel wells).
  * @param bool bevel_ends Bevel the outer edges of the rails.  Set to false if you intend to connect multiple rails together on the same piece of track.
  */
-module wood_track(length=53.5, rails=true, bevel_ends=true) {
+module wood_track(length=53.5, rails=true, double_sided_rails = false, bevel_ends=true) {
     //TODO Wheel_well on both sides, by substract wood_rails on the bottom, too
     bevel_pad = bevel_width*sqrt(.5)*($o/2);
     difference() {
         rotate([90,0,90]) linear_extrude(length, convexity = 10) wood_track_2d();
         if (rails) {
             wood_rails(length, bevel_ends=bevel_ends);
-            rotate([180,0,0]) translate([0,-wood_width(),-wood_height()]) wood_rails(length, bevel_ends=bevel_ends); //add rails on the bottom of the track
+            if (double_sided_rails){
+            rotate([180,0,0]) translate([0,-wood_width(),-wood_height()]) wood_rails(length, bevel_ends=bevel_ends);
+            }
         }
         if (bevel_ends) {
             for (i = [ 0-bevel_pad, length+bevel_pad]) {
@@ -247,7 +249,7 @@ module wood_rails(length=53.5, bevel_ends=true) {
  * @param bool rails False if you do not want to include rails (wheel wells).
  * @param bool bevel_ends Bevel the outer edges of the rails.  Set to false if you intend to connect multiple rails together on the same piece of track.
  */
-module wood_track_arc(radius = 245/2, angle=45, rails=true, bevel_ends=true) {
+module wood_track_arc(radius = 245/2, angle=45, rails=true, double_sided_rails = false, bevel_ends=true) {
     //TODO Wheel_well on both sides, by substract wood_rails_arc on the bottom, too
     difference() {
         intersection() {
@@ -258,6 +260,9 @@ module wood_track_arc(radius = 245/2, angle=45, rails=true, bevel_ends=true) {
         }
         if (rails) {
             wood_rails_arc(radius,angle,bevel_ends=bevel_ends);
+            if (double_sided_rails){
+                rotate([180,0,360/8])translate([0,0,-wood_height()])wood_rails_arc(radius,angle,bevel_ends=bevel_ends);
+            }
         }
     }
 }
