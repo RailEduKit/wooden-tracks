@@ -62,12 +62,6 @@ use <dotscad/pie.scad>;
  * is imported into your own project via the `use` statement.
  */
 tracklib_example();
-//wood_track_2d();
-//wood_track();
-//wood_rails_2d();
-//rotate([180,0,0]) translate([0,-wood_width(),-wood_height()]) wood_rails();
-//wood_track_arc(double_sided_rails=true);
-
 module tracklib_example($fn=25) {
     // Wood pieces
     wood_track(10);
@@ -78,14 +72,15 @@ module tracklib_example($fn=25) {
         wood_cutout();
     }
     translate([-20,-10,0]) rotate([0,0,90]) wood_track_arc(10, 25, $fn=120);
-    //translate([-14,-3,0]) rotate([0,0,90+25]) wood_track_slope(25, 30, $fn=120);
-    //translate([-29,-10,6]) rotate([30,0,90+25]) wood_track_slope(25, -30, $fn=120);
+    translate([-52,42,0]) rotate([0,0,270]) wood_track_arc(10, 25, $fn=120, double_sided_rails=true);
+    translate([-58,-8,0]) rotate([0,0,90]) wood_track_slope(25, 30, $fn=120);
+    translate([-73,-8,6]) rotate([30,0,90]) wood_track_slope(25, -30, $fn=120);
     // Trackmaster pieces
-//    translate([40,30,0]) trackmaster_plug();
-//    translate([40,10,0]) difference() {
-//       translate([0,-trackmaster_plug_radius()-2]) cube([trackmaster_plug_neck_length() + trackmaster_plug_radius() + 2, trackmaster_plug_radius() * 2 + 4, trackmaster_height()]);
-//       trackmaster_cutout();
-//    }
+    translate([40,30,0]) trackmaster_plug();
+    translate([40,10,0]) difference() {
+       translate([0,-trackmaster_plug_radius()-2]) cube([trackmaster_plug_neck_length() + trackmaster_plug_radius() + 2, trackmaster_plug_radius() * 2 + 4, trackmaster_height()]);
+       trackmaster_cutout();
+    }
 }
 
 /* ******************************************************************************
@@ -189,7 +184,6 @@ module wood_rails_2d() {
  * @param bool bevel_ends Bevel the outer edges of the rails.  Set to false if you intend to connect multiple rails together on the same piece of track.
  */
 module wood_track(length=53.5, rails=true, double_sided_rails = false, bevel_ends=true) {
-    //TODO Wheel_well on both sides, by substract wood_rails on the bottom, too
     bevel_pad = bevel_width*sqrt(.5)*($o/2);
     difference() {
         rotate([90,0,90]) linear_extrude(length, convexity = 10) wood_track_2d();
@@ -250,7 +244,6 @@ module wood_rails(length=53.5, bevel_ends=true) {
  * @param bool bevel_ends Bevel the outer edges of the rails.  Set to false if you intend to connect multiple rails together on the same piece of track.
  */
 module wood_track_arc(radius = 245/2, angle=45, rails=true, double_sided_rails = false, bevel_ends=true) {
-    //TODO Wheel_well on both sides, by substract wood_rails_arc on the bottom, too
     difference() {
         intersection() {
             pie(radius + wood_width(), angle, wood_height());
@@ -261,7 +254,7 @@ module wood_track_arc(radius = 245/2, angle=45, rails=true, double_sided_rails =
         if (rails) {
             wood_rails_arc(radius,angle,bevel_ends=bevel_ends);
             if (double_sided_rails){
-                rotate([180,0,360/8])translate([0,0,-wood_height()])wood_rails_arc(radius,angle,bevel_ends=bevel_ends);
+                rotate([180,0,angle])translate([0,0,-wood_height()])wood_rails_arc(radius,angle,bevel_ends=bevel_ends);
             }
         }
     }

@@ -51,11 +51,15 @@ radius = 180; // [87.5:small, 180:large]
 // Angle of track to render.  45 is standard.
 angle = 45; // [1:360]
 
+// Wheel wells on both sides of the track?
+double_sided_rails = true;
+
+
 // Lots of facets
 $fn=120;
 
 // Render the part
-render_track(base, left, straight, right, straight_size, radius, angle);
+render_track(base, left, straight, right, straight_size, radius, angle, double_sided_rails);
 
 /* ******************************************************************************
  * Main module code below:
@@ -72,8 +76,9 @@ use <trains/tracklib.scad>;
  * @param string|int straight_size Length of the straight track, or auto to use the best fit for the requested curve radius.
  * @param float radius             Curve radius (usually 87.5 or 180)
  * @param float angle              Angle of track to render.  45 is standard
+ * @param boolean double_sided_rails    True: Wheel Wells on both sides of the track
  */
-module render_track(base, left, straight, right, straight_size, radius, angle) {
+module render_track(base, left, straight, right, straight_size, radius, angle, double_sided_rails) {
     straight_length = (
         straight_size == "auto"
         ? ((left == "none" && right == "none")
@@ -153,12 +158,21 @@ module render_track(base, left, straight, right, straight_size, radius, angle) {
             // Now we can subtract the "rails"
             if (straight != "none") {
                 translate([radius+wood_width(),0,0]) rotate([0,0,90]) wood_rails(straight_length);
+                if (double_sided_rails){
+                    translate([radius,0,wood_height()]) rotate([180,0,90]) wood_rails(straight_length);
+                }
             }
             if (left != "none") {
                 wood_rails_arc(radius, angle);
+                if (double_sided_rails){
+                    rotate([180,0,angle])translate([0,0,-wood_height()])wood_rails_arc(radius, angle);
+                }
             }
             if (right != "none") {
                 translate([radius*2+wood_width(),0,0]) rotate([0,0,180-angle]) wood_rails_arc(radius, angle);
+                if (double_sided_rails){
+                    rotate([180,0,angle])translate([0,0,-wood_height()])wood_rails_arc(radius, angle);
+                }
             }
         }
     }
