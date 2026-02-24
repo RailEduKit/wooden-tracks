@@ -26,30 +26,33 @@
  * Unfortunately, Customizer doesn't support multiple .scad files so this won't work.
  * ****************************************************************************** */
 
+include<./specification_of_components.scad>
+
+
 /* [parameters] */
 
-// Connector to place on the base end of the piece.
-base = "female"; // [male,female]
-
-// Render a curve to the left with the requested connector, or none for no curve.
-left = "female"; // [male,female,none]
-
-// Render a straight center track with the requested connector, or none for no straight track.
-straight = "male"; // [male,female,none]
-
-// Render a curve to the left with the requested connector, or none for no curve.
-right = "female"; // [male,female,none]
+//// Connector to place on the base end of the piece.
+//base = "female"; // [male,female]
+//
+//// Render a curve to the left with the requested connector, or none for no curve.
+//left = "female"; // [male,female,none]
+//
+//// Render a straight center track with the requested connector, or none for no straight track.
+//straight = "male"; // [male,female,none]
+//
+//// Render a curve to the left with the requested connector, or none for no curve.
+//right = "female"; // [male,female,none]
 
 // Length of the straight track, or auto to use the best fit for the requested curve radius.
-straight_size = "auto"; // [auto:auto, 51:xsmall, 102:small, 152:medium, 203:large, 254:xlarge, 305:xxlarge]
+straight_size = straight_length; // [auto:auto, 51:xsmall, 102:small, 152:medium, 203:large, 254:xlarge, 305:xxlarge]
 
 // Curve radius.  Sizes provided are standard.
-radius = 180; // [87.5:small, 180:large]
+radius = curve_inner_radius; // [87.5:small, 180:large]
 
 /* [Hidden] */
 
 // Angle of track to render.  45 is standard.
-angle = 45; // [1:360]
+angle = curve_angle; // [1:360]
 
 // Wheel wells on both sides of the track?
 double_sided_rails = true;
@@ -66,7 +69,7 @@ $fn=120;
  * ****************************************************************************** */
 
 // Import tracklib from globally-installed copy
-use <trains/tracklib.scad>;
+use <./tracklib.scad>;
 
 /*
  * @param string base              Connector to place on the base end of the piece.
@@ -78,7 +81,7 @@ use <trains/tracklib.scad>;
  * @param float angle              Angle of track to render.  45 is standard
  * @param boolean double_sided_rails    True: Wheel Wells on both sides of the track
  */
-module render_track(base, left, straight, right, straight_size, radius, angle, double_sided_rails) {
+module render_track(base, left, straight, right, double_sided_rails) {
     straight_length = (
         straight_size == "auto"
         ? ((left == "none" && right == "none")
@@ -171,9 +174,39 @@ module render_track(base, left, straight, right, straight_size, radius, angle, d
             if (right != "none") {
                 translate([radius*2+wood_width(),0,0]) rotate([0,0,180-angle]) wood_rails_arc(radius, angle);
                 if (double_sided_rails){
-                    translate([2*radius+wood_width(),0,-wood_well_height()])rotate([0,0,3*angle])wood_rails_arc(radius, angle);
+                    translate([radius*2+wood_width(),0,wood_height()])rotate([180,0,180])wood_rails_arc(radius, angle);
                 }
             }
         }
     }
 }
+
+module magnet_hole(){
+    cylinder(h=magnet_thickness+move_tolerance, d=magnet_diameter+move_tolerance);
+}
+
+module pin_hole(){
+    cylinder(h=rail_height, d=om_pin_diameter+move_tolerance);
+}
+
+module curve_shape_control(){
+    linear_extrude(height = 1) projection() render_track("female","none","none","male", false);
+}
+
+module curve_with_drill_holes(){
+    difference(){
+        render_track("female","none","none","male", true);
+        translate([c_ph1_xpos, c_ph1_ypos, 0]) pin_hole();
+        translate([c_ph2_xpos, c_ph2_ypos, 0]) pin_hole();
+        translate([c_ph3_xpos, c_ph3_ypos, 0]) pin_hole();
+        translate([c_mh4_xpos, c_mh4_ypos, c_mh_zpos]) rotate([0,90,c_mh4_zrot]) magnet_hole();
+        translate([c_mh5_xpos, c_mh5_ypos, c_mh_zpos]) rotate([0,-90,c_mh5_zrot]) magnet_hole();
+        translate([c_mh6_xpos, c_mh6_ypos, c_mh_zpos]) rotate([0,90,c_mh6_zrot]) magnet_hole();
+    translate([c_mh7_xpos, c_mh7_ypos, c_mh_zpos]) rotate([0,-90,c_mh7_zrot]) magnet_hole();
+    }
+    
+}
+
+//curve_shape_control();
+curve_with_drill_holes();
+//render_track("female","none","none","male", true);

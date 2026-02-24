@@ -23,7 +23,7 @@
 $o = .1;
 
 // Constants for wooden track parts:
-function wood_width()            = 40;
+function wood_width()            = 38.5;
 function wood_height()           = 6;
 function wood_well_height()      = 3; // height of the well from the bottom a the track
 function wood_well_width()       = 5.7;
@@ -61,7 +61,7 @@ use <dotscad/pie.scad>;
  * example of the functions it provides.  This example will *not* render if this module
  * is imported into your own project via the `use` statement.
  */
-tracklib_example();
+//tracklib_example();
 module tracklib_example($fn=25) {
     // Wood pieces
     wood_track(10);

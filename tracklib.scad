@@ -61,7 +61,7 @@ use <dotscad/pie.scad>;
  * example of the functions it provides.  This example will *not* render if this module
  * is imported into your own project via the `use` statement.
  */
-tracklib_example();
+//tracklib_example();
 module tracklib_example($fn=25) {
     // Wood pieces
     wood_track(10);
